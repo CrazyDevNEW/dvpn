@@ -1,6 +1,7 @@
 import textwrap as tw
-from concurrent import interpreters  # type: ignore
-from .pipes import InterpPipe
+import threading
+from concurrent import interpreters
+from .pipes_utils import InterpPipe
 
 
 BOOTSTRAP = tw.dedent(
@@ -29,6 +30,10 @@ class SubInterpreterWorker:
         self._interp = interpreters.create()
 
     def start(self) -> None:
+        self._thread = threading.Thread(target=self._run, name=f"subinterp:{self._class_name}", daemon=True)
+        self._thread.start()
+
+    def _run(self) -> None:
         code = tw.dedent(f"""
         import importlib
         from oop_subinterp.pipes import InterpPipe
@@ -43,6 +48,9 @@ class SubInterpreterWorker:
 
     def close(self) -> None:
         try:
+            t = getattr(self, "_thread", None)
+            if t:
+                t.join()
             self._interp.close()
         except Exception:
             pass

@@ -1,7 +1,8 @@
 from __future__ import annotations
 import queue
-from typing import Any, Optional, Protocol
-from concurrent import interpreters  # type: ignore
+from typing import Any, Optional, Protocol, Tuple
+from dataclasses import dataclass
+from concurrent import interpreters
 
 
 class IPipe(Protocol):
@@ -47,3 +48,31 @@ class InterpPipe:
 
 def export_ids(pipe: InterpPipe) -> tuple[int, int]:
     return pipe.ids
+
+
+@dataclass(frozen=True)
+class Start:
+    host: str
+    port: int
+
+
+@dataclass(frozen=True)
+class Stop:
+    pass
+
+
+@dataclass(frozen=True)
+class Event:
+    status: str
+    
+
+@dataclass(frozen=True)
+class Datagram:
+    data: bytes
+    addr: Tuple[str, int]
+
+
+@dataclass(frozen=True)
+class Error:
+    message: str
+    details: str | None = None

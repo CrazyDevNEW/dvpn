@@ -1,6 +1,5 @@
 from typing import Optional
-from .pipes import InterpPipe
-from .messages import Start, Stop, Datagram
+from .pipes_utils import InterpPipe, Start, Stop, Datagram
 from .subinterp import SubInterpreterWorker
 
 
